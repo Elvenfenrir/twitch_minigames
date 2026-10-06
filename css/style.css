@@ -1,7 +1,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; }
 body {
-  background: #0b0e17;
+  background: var(--bg, #10151f);
   color: #fff;
   font-family: "Segoe UI", system-ui, sans-serif;
 }
@@ -33,11 +33,11 @@ body.transparent { background: transparent; }
 #top ol { margin: 0; padding: 0; list-style: none; }
 #top li { display: flex; justify-content: space-between; gap: 14px; }
 #top li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
-#top li b { color: #ffd54a; }
+#top li b { color: var(--accent); }
 #votes { right: 12px; bottom: 12px; font-size: 15px; }
 #banner {
   left: 50%; top: 14px; transform: translateX(-50%);
-  background: #ffb300; color: #1a1a1a; text-shadow: none; font-size: 20px;
+  background: var(--accent); color: #1a1a1a; text-shadow: none; font-size: 20px;
 }
 #hint { left: 50%; bottom: 10px; transform: translateX(-50%); font-size: 16px; white-space: nowrap; }
 
@@ -50,7 +50,7 @@ body.transparent { background: transparent; }
 #overlay.show { display: flex; }
 #overlay-box {
   text-align: center; padding: 24px 40px; border-radius: 16px;
-  background: rgba(15, 20, 35, .92); border: 2px solid #ffd54a;
+  background: rgba(15, 20, 35, .92); border: 2px solid var(--accent);
 }
 #overlay-box h1 { margin: 0 0 6px; font-size: 40px; }
 #overlay-box p { margin: 4px 0; font-size: 22px; }
@@ -68,3 +68,4 @@ body.transparent { background: transparent; }
   display: none; width: 260px; padding: 6px 10px;
 }
 body.debug #dbg { display: block; }
+

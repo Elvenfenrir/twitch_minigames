@@ -4,7 +4,7 @@ Games.breakout = {
   create(o) {
     const COLS = 10, ROWS = 6, BW = 64, BH = 24, GAP = 4, OX = 20, OY = 80;
     const PW = 120, PH = 14, PY = 670, R = 9;
-    const COLORS = ['#ef5350', '#ff9800', '#fdd835', '#66bb6a', '#42a5f5', '#ab47bc'];
+    const COLORS = [1, 2, 3, 4, 5, 6].map((i) => Params.theme['brick' + i]);
     const bricks = [];
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
       bricks.push({ x: OX + c * (BW + GAP), y: OY + r * (BH + GAP), r, alive: true });
@@ -40,7 +40,7 @@ Games.breakout = {
         for (let i = 0; i < steps && !g.over && ball.held <= 0; i++) move(s / steps);
       },
       draw(ctx) {
-        ctx.fillStyle = '#10151f';
+        ctx.fillStyle = Params.canvasBg;
         ctx.fillRect(0, 0, 720, 720);
         bricks.forEach((b) => {
           if (!b.alive) return;
@@ -48,11 +48,11 @@ Games.breakout = {
           Util.roundRect(ctx, b.x, b.y, BW, BH, 4);
           ctx.fill();
         });
-        ctx.fillStyle = '#eceff1';
+        ctx.fillStyle = Params.accent;
         Util.roundRect(ctx, px - PW / 2, PY, PW, PH, 7);
         ctx.fill();
         ctx.beginPath(); ctx.arc(ball.x, ball.y, R, 0, 7); ctx.fill();
-        ctx.fillStyle = '#ef5350';
+        ctx.fillStyle = Params.theme.ball;
         for (let i = 0; i < lives; i++) { ctx.beginPath(); ctx.arc(30 + i * 28, 40, 9, 0, 7); ctx.fill(); }
       }
     };
@@ -91,3 +91,5 @@ Games.breakout = {
     return g;
   }
 };
+
+

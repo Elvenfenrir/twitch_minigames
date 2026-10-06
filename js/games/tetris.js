@@ -12,7 +12,8 @@ Games.tetris = {
       J: [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
       L: [[0, 0, 1], [1, 1, 1], [0, 0, 0]]
     };
-    const COLORS = { I: '#26c6da', O: '#fdd835', T: '#ab47bc', S: '#66bb6a', Z: '#ef5350', J: '#42a5f5', L: '#ffa726' };
+    const T = Params.theme;
+    const COLORS = { I: T.pI, O: T.pO, T: T.pT, S: T.pS, Z: T.pZ, J: T.pJ, L: T.pL };
     const board = Array.from({ length: H }, () => Array(W).fill(null));
     let bag = [], cur = null, next = null, acc = 0, lines = 0;
 
@@ -103,11 +104,11 @@ Games.tetris = {
         while (acc >= iv && !g.over) { acc -= iv; down(); }
       },
       draw(ctx) {
-        ctx.fillStyle = '#10151f';
+        ctx.fillStyle = Params.canvasBg;
         ctx.fillRect(0, 0, 720, 720);
-        ctx.fillStyle = '#0a0d14';
+        ctx.fillStyle = Params.theme.board;
         ctx.fillRect(OX, OY, W * C, H * C);
-        ctx.strokeStyle = 'rgba(255,255,255,.05)';
+        ctx.strokeStyle = Params.alpha(Params.theme.grid, 0.07);
         for (let x = 0; x <= W; x++) { ctx.beginPath(); ctx.moveTo(OX + x * C, OY); ctx.lineTo(OX + x * C, OY + H * C); ctx.stroke(); }
         for (let y = 0; y <= H; y++) { ctx.beginPath(); ctx.moveTo(OX, OY + y * C); ctx.lineTo(OX + W * C, OY + y * C); ctx.stroke(); }
         for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -122,12 +123,12 @@ Games.tetris = {
             }
           }));
         }
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = Params.accent;
         ctx.font = 'bold 22px Segoe UI, sans-serif';
         ctx.fillText('SIGUIENTE', 490, 50);
         const nm = SHAPES[next];
         nm.forEach((r, y) => r.forEach((v, x) => { if (v) cell(ctx, 490 + x * C, 70 + y * C, COLORS[next]); }));
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = Params.alpha(Params.theme.grid, 0.9);
         ctx.fillText('LÍNEAS ' + lines, 490, 260);
         ctx.fillText('NIVEL ' + (level() + 1), 490, 295);
       }
@@ -136,3 +137,5 @@ Games.tetris = {
     return g;
   }
 };
+
+

@@ -4,7 +4,7 @@
   const canvas = $('stage'), ctx = canvas.getContext('2d');
   const ALIASES = {
     buscaminas: 'minesweeper', arkanoid: 'breakout', conecta4: 'connect4', c4: 'connect4',
-    serpiente: 'snake', '2048': '2048'
+    serpiente: 'snake', '2048': '2048', tictactoe: 'tictactoe', gato: 'tictactoe', tresenraya: 'tictactoe', ttt: 'tictactoe'
   };
   const norm = (s) => {
     s = String(s || '').trim().toLowerCase();
@@ -19,6 +19,8 @@
   }
   const fixed = pool.length === 1;
 
+  document.documentElement.style.setProperty('--bg', P.bg);
+  document.documentElement.style.setProperty('--accent', P.accent);
   document.body.classList.toggle('transparent', P.transparent);
   document.body.classList.toggle('debug', P.debug);
   $('status').classList.toggle('hidden', !P.status);
@@ -174,3 +176,4 @@
   }
   requestAnimationFrame(frame);
 })();
+

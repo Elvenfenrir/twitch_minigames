@@ -66,12 +66,18 @@
         return;
       }
       const ev = msg.event;
-      if (!ev) return;
+      if (!ev) {
+        // CPH.WebsocketBroadcastJson envia el JSON tal cual, sin envoltorio de evento.
+        if (!msg.request && !msg.status && (msg.game !== undefined || msg.action !== undefined)) this.opts.onCustom(msg);
+        return;
+      }
       const d = msg.data || {};
       if (ev.source === 'Twitch' && ev.type === 'ChatMessage') {
-        const m = d.message || {};
-        const text = typeof m === 'string' ? m : m.message;
-        const user = m.displayName || m.username || 'anon';
+        const m = d.message && typeof d.message === 'object' ? d.message : {};
+        const text = typeof d.text === 'string' ? d.text
+          : typeof d.message === 'string' ? d.message : m.message;
+        const u = d.user && typeof d.user === 'object' ? d.user : {};
+        const user = u.name || u.login || m.displayName || m.username || 'anon';
         if (text) this.opts.onChat(String(user), String(text));
       } else if (ev.source === 'General' && ev.type === 'Custom') {
         this.opts.onCustom(d.data !== undefined && typeof d.data === 'object' ? d.data : d);
@@ -80,3 +86,4 @@
   }
   window.StreamerBot = StreamerBot;
 })();
+

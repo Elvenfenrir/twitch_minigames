@@ -4,10 +4,10 @@ Games.snake = {
   create(o) {
     const N = 20, C = 36;
     const DIRS = { A: [-1, 0], D: [1, 0], W: [0, -1], E: [0, -1], S: [0, 1] };
-    let snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
-    let dir = { x: 1, y: 0 };
+    let snake = [{ x: 10, y: 14 }, { x: 10, y: 15 }, { x: 10, y: 16 }];
+    let dir = { x: 0, y: -1 };
     let queue = [];
-    let acc = 0, apples = 0;
+    let acc = -3000, apples = 0;
     let food = null;
 
     const placeFood = () => {
@@ -30,26 +30,26 @@ Games.snake = {
         if (queue.length < 3) queue.push({ x: d[0], y: d[1] });
       },
       update(dt) {
-        const step = (1000 / (7 * o.speed)) * Math.max(0.45, 1 - 0.02 * apples);
+        const step = (1000 / (4 * o.speed)) * Math.max(0.5, 1 - 0.02 * apples);
         acc += dt;
         while (acc >= step && !g.over) { acc -= step; tick(); }
       },
       draw(ctx) {
-        ctx.fillStyle = '#10151f';
+        ctx.fillStyle = Params.canvasBg;
         ctx.fillRect(0, 0, 720, 720);
-        ctx.strokeStyle = 'rgba(255,255,255,.04)';
+        ctx.strokeStyle = Params.alpha(Params.theme.grid, 0.05);
         for (let i = 0; i <= N; i++) {
           ctx.beginPath(); ctx.moveTo(i * C, 0); ctx.lineTo(i * C, 720); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(0, i * C); ctx.lineTo(720, i * C); ctx.stroke();
         }
         if (food) {
-          ctx.fillStyle = '#ff5252';
+          ctx.fillStyle = Params.theme.food;
           ctx.beginPath();
           ctx.arc(food.x * C + C / 2, food.y * C + C / 2, C * 0.35, 0, 7);
           ctx.fill();
         }
         snake.forEach((s, i) => {
-          ctx.fillStyle = i === 0 ? '#b9f6ca' : `hsl(${140 - Math.min(i, 40)}, 70%, ${52 - Math.min(i, 30) * 0.5}%)`;
+          ctx.fillStyle = i === 0 ? Params.accent : Params.theme.snake;
           Util.roundRect(ctx, s.x * C + 2, s.y * C + 2, C - 4, C - 4, 8);
           ctx.fill();
         });
@@ -72,3 +72,5 @@ Games.snake = {
     return g;
   }
 };
+
+

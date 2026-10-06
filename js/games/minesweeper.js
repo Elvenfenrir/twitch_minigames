@@ -4,6 +4,7 @@ Games.minesweeper = {
   create() {
     const N = 10, MINES = 14, C = 60, OX = 60, OY = 60;
     const NUM = ['', '#42a5f5', '#66bb6a', '#ef5350', '#7e57c2', '#ff7043', '#26c6da', '#eee', '#999'];
+    const MS = Params.theme;
     const cells = Array.from({ length: N * N }, () => ({ mine: false, open: false, flag: false, n: 0 }));
     let started = false, opened = 0;
     const at = (x, y) => (x < 0 || y < 0 || x >= N || y >= N ? null : cells[y * N + x]);
@@ -62,9 +63,9 @@ Games.minesweeper = {
       },
       update() {},
       draw(ctx) {
-        ctx.fillStyle = '#10151f';
+        ctx.fillStyle = Params.canvasBg;
         ctx.fillRect(0, 0, 720, 720);
-        ctx.fillStyle = '#9aa5b8';
+        ctx.fillStyle = Params.accent;
         ctx.font = 'bold 28px Segoe UI, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -76,7 +77,7 @@ Games.minesweeper = {
           const c = at(x, y);
           const px = OX + x * C, py = OY + y * C;
           const showMine = g.over && c.mine;
-          ctx.fillStyle = showMine ? (c.open ? '#e53935' : '#5d4037') : c.open ? '#232a3a' : '#3b4560';
+          ctx.fillStyle = showMine ? (c.open ? MS.msMine : Params.alpha(MS.msMine, 0.5)) : c.open ? MS.msOpen : MS.msClosed;
           Util.roundRect(ctx, px + 2, py + 2, C - 4, C - 4, 6);
           ctx.fill();
           if (c.open && !c.mine && c.n) {
@@ -87,7 +88,7 @@ Games.minesweeper = {
             ctx.fillStyle = '#fff';
             ctx.beginPath(); ctx.arc(px + C / 2, py + C / 2, 11, 0, 7); ctx.fill();
           } else if (c.flag) {
-            ctx.fillStyle = '#ffd54a';
+            ctx.fillStyle = MS.msFlag;
             ctx.beginPath(); ctx.moveTo(px + 20, py + 14); ctx.lineTo(px + 44, py + 24); ctx.lineTo(px + 20, py + 34); ctx.fill();
             ctx.fillRect(px + 18, py + 14, 3, 32);
           }
@@ -99,3 +100,5 @@ Games.minesweeper = {
     return g;
   }
 };
+
+

@@ -98,18 +98,18 @@ Games.connect4 = {
         if (!finish()) turn = 1;
       },
       draw(ctx) {
-        ctx.fillStyle = '#10151f';
+        ctx.fillStyle = Params.canvasBg;
         ctx.fillRect(0, 0, 720, 720);
-        ctx.fillStyle = '#1e40af';
+        ctx.fillStyle = Params.theme.c4board;
         Util.roundRect(ctx, OX, OY, COLS * C, ROWS * C, 16);
         ctx.fill();
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#9aa5b8';
+        ctx.fillStyle = Params.accent;
         ctx.font = 'bold 26px Segoe UI, sans-serif';
         for (let c = 0; c < COLS; c++) ctx.fillText(`${c + 1} · ${String.fromCharCode(65 + c)}`, OX + c * C + C / 2, OY - 30);
         for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-          ctx.fillStyle = b[r][c] === 1 ? '#ef5350' : b[r][c] === 2 ? '#fdd835' : '#0b0e17';
+          ctx.fillStyle = b[r][c] === 1 ? Params.theme.c4p1 : b[r][c] === 2 ? Params.theme.c4p2 : Params.theme.c4empty;
           ctx.beginPath();
           ctx.arc(OX + c * C + C / 2, OY + r * C + C / 2, 39, 0, 7);
           ctx.fill();
@@ -121,7 +121,7 @@ Games.connect4 = {
           });
         }
         if (!g.over) {
-          ctx.fillStyle = turn === 1 ? '#ef5350' : '#fdd835';
+          ctx.fillStyle = turn === 1 ? Params.theme.c4p1 : Params.theme.c4p2;
           ctx.font = 'bold 28px Segoe UI, sans-serif';
           ctx.fillText(turn === 1 ? 'Turno del chat' : 'Pensando la IA…', 360, 700);
         }
@@ -131,3 +131,5 @@ Games.connect4 = {
     return g;
   }
 };
+
+

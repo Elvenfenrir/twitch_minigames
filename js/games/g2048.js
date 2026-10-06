@@ -50,9 +50,9 @@ Games['2048'] = {
       },
       update() {},
       draw(ctx) {
-        ctx.fillStyle = '#10151f';
+        ctx.fillStyle = Params.canvasBg;
         ctx.fillRect(0, 0, 720, 720);
-        ctx.fillStyle = '#1b2233';
+        ctx.fillStyle = Params.accent;
         Util.roundRect(ctx, OX - GAP, OY - GAP, N * T + (N + 1) * GAP, N * T + (N + 1) * GAP, 14);
         ctx.fill();
         ctx.textAlign = 'center';
@@ -60,7 +60,7 @@ Games['2048'] = {
         for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
           const v = grid[y][x];
           const px = OX + x * (T + GAP) , py = OY + y * (T + GAP);
-          ctx.fillStyle = COLORS[v] || '#3c3a32';
+          ctx.fillStyle = v ? (COLORS[v] || '#3c3a32') : Params.theme.tileEmpty;
           Util.roundRect(ctx, px, py, T, T, 10);
           ctx.fill();
           if (v) {
@@ -77,3 +77,5 @@ Games['2048'] = {
     return g;
   }
 };
+
+

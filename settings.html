@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Chat Mini Games - Settings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #0f131c; color: #e8ecf4; }
+  .wrap { display: grid; grid-template-columns: minmax(340px, 480px) 1fr; gap: 20px; padding: 20px; min-height: 100vh; }
+  h1 { margin: 0 0 14px; font-size: 22px; }
+  fieldset { border: 1px solid #2a3246; border-radius: 10px; margin: 0 0 14px; padding: 10px 14px 12px; }
+  legend { padding: 0 6px; color: #ffd54a; font-weight: 600; }
+  label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 0; font-size: 14px; }
+  label small { color: #8b95aa; display: block; font-size: 11px; }
+  input[type=text], input[type=number], input[type=password], select {
+    background: #1a2132; color: #fff; border: 1px solid #333d55; border-radius: 6px; padding: 5px 8px; width: 170px;
+  }
+  input[type=color] { width: 44px; height: 28px; border: 0; background: none; padding: 0; }
+  .games { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .games label { margin: 2px 0; justify-content: flex-start; }
+  #out { width: 100%; height: 110px; background: #0a0d14; color: #9be19b; border: 1px solid #333d55; border-radius: 8px; padding: 8px; font-family: Consolas, monospace; font-size: 13px; resize: vertical; }
+  button, a.btn { background: #ffd54a; color: #1a1a1a; border: 0; border-radius: 6px; padding: 7px 14px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 14px; display: inline-block; }
+  button.sec { background: #2a3246; color: #fff; }
+  .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  iframe { width: 100%; aspect-ratio: 1 / 1; max-height: 78vh; border: 1px solid #2a3246; border-radius: 10px; background: #000; }
+  .note { color: #8b95aa; font-size: 12px; margin-top: 6px; }
+  .grp { color: #8b95aa; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin: 10px 0 2px; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h1>Chat Mini Games · Settings</h1>
+
+    <fieldset><legend>Juegos</legend>
+      <div class="games" id="games"></div>
+      <div class="note">Sin marcar o todos marcados = al azar entre todos.</div>
+    </fieldset>
+
+    <fieldset><legend>Juego</legend>
+      <label>Modo del chat
+        <select data-k="mode" data-def="instant"><option value="instant">Inmediato</option><option value="vote">Votación</option></select>
+      </label>
+      <label>Ventana de votación (ms) <input type="number" data-k="voteMs" data-def="1500" min="200" step="100" value="1500"></label>
+      <label>Velocidad (x) <input type="number" data-k="speed" data-def="1" min="0.2" step="0.1" value="1"></label>
+      <label>Segundos de game over <input type="number" data-k="gameOverSec" data-def="10" min="1" value="10"></label>
+      <label>Aviso de cambio (seg) <input type="number" data-k="switchSec" data-def="10" min="0" value="10"></label>
+    </fieldset>
+
+    <fieldset><legend>Interfaz</legend>
+      <label>Mostrar score <input type="checkbox" data-k="score" data-def="1" checked></label>
+      <label>Top usuarios (0 = oculto) <input type="number" data-k="top" data-def="0" min="0" max="20" value="0"></label>
+      <label>Guardar stats (persist) <input type="checkbox" data-k="persist" data-def="0"></label>
+      <label>Mostrar controles <input type="checkbox" data-k="hint" data-def="1" checked></label>
+      <label>Punto de conexión <input type="checkbox" data-k="status" data-def="1" checked></label>
+      <label>Fondo transparente (OBS) <input type="checkbox" data-k="transparent" data-def="0"></label>
+    </fieldset>
+
+    <fieldset><legend>Colores</legend>
+      <label>Preset
+        <select id="preset"><option value="">Oscuro (por defecto)</option></select>
+      </label>
+      <div class="note">Cambia cualquier color; solo se añaden a la URL los que difieran del preset.</div>
+      <div id="colors"></div>
+    </fieldset>
+
+    <fieldset><legend>Streamer.bot</legend>
+      <label>Host <input type="text" data-k="host" data-def="127.0.0.1" value="127.0.0.1"></label>
+      <label>Puerto <input type="number" data-k="port" data-def="8080" value="8080"></label>
+      <label>Endpoint <input type="text" data-k="endpoint" data-def="/" value="/"></label>
+      <label>Contraseña <input type="password" data-k="password" data-def="" value=""></label>
+      <label>SSL (wss) <input type="checkbox" data-k="ssl" data-def="0"></label>
+      <label>Debug (simular chat) <input type="checkbox" data-k="debug" data-def="0"></label>
+    </fieldset>
+  </div>
+
+  <div>
+    <h1>URL generada</h1>
+    <textarea id="out" readonly></textarea>
+    <div class="row">
+      <button id="copy">Copiar URL</button>
+      <a class="btn" id="open" target="_blank">Abrir</a>
+      <button class="sec" id="reset">Restablecer</button>
+    </div>
+    <div class="note" id="msg">En OBS: Browser Source → marca "Local file" y pega solo la parte de ruta, o usa la URL completa.</div>
+    <h1 style="margin-top:18px">Vista previa</h1>
+    <iframe id="prev"></iframe>
+  </div>
+</div>
+
+<script src="js/util.js"></script>
+<script>
+  // Lista de juegos mantenida aquí para no cargar los scripts de los juegos.
+  const GAMES = [
+    ['tetris', 'Tetris'], ['snake', 'Snake'], ['minesweeper', 'Buscaminas'],
+    ['breakout', 'Breakout'], ['2048', '2048'], ['connect4', 'Conecta 4'], ['tictactoe', 'Tic-Tac-Toe']
+  ];
+  const $ = (id) => document.getElementById(id);
+  const gbox = $('games');
+  GAMES.forEach(([id, n]) => {
+    const l = document.createElement('label');
+    l.innerHTML = `<input type="checkbox" data-game="${id}"> ${n}`;
+    gbox.append(l);
+  });
+
+  // Selectores de color generados desde Util.THEME (misma fuente que usa el juego).
+  const cbox = $('colors');
+  let lastGroup = '';
+  Util.THEME.forEach(([k, d, label, group]) => {
+    if (group !== lastGroup) {
+      const h = document.createElement('div');
+      h.className = 'grp'; h.textContent = group; cbox.append(h);
+      lastGroup = group;
+    }
+    const l = document.createElement('label');
+    l.innerHTML = `${label} <span><input type="color" data-k="${k}" data-color data-base="${d}" data-def="${d}" value="${d}"></span>`;
+    cbox.append(l);
+  });
+  Object.keys(Util.PRESETS).forEach((p) => {
+    const o = document.createElement('option'); o.value = p; o.textContent = p; $('preset').append(o);
+  });
+  function applyPreset() {
+    const pr = Util.PRESETS[$('preset').value] || {};
+    document.querySelectorAll('[data-color]').forEach((el) => {
+      el.dataset.def = pr[el.dataset.k] || el.dataset.base;
+      el.value = el.dataset.def;
+    });
+  }
+
+  const fields = [...document.querySelectorAll('[data-k]')];
+  const val = (el) => (el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value);
+  let t;
+
+  function build() {
+    const p = new URLSearchParams();
+    const sel = [...document.querySelectorAll('[data-game]')].filter((c) => c.checked).map((c) => c.dataset.game);
+    if (sel.length && sel.length < GAMES.length) p.set('game', sel.join(','));
+    if ($('preset').value) p.set('theme', $('preset').value);
+    fields.forEach((el) => {
+      let v = val(el), d = el.dataset.def;
+      if (el.type === 'color') { v = v.slice(1); d = d.slice(1); }
+      if (v !== d) p.set(el.dataset.k, v);
+    });
+    const base = location.href.replace(/[^/\\]*$/, '') + 'index.html';
+    const url = base + (p.toString() ? '?' + p.toString().replace(/%2C/g, ',') : '');
+    $('out').value = url;
+    $('open').href = url;
+    clearTimeout(t);
+    t = setTimeout(() => {
+      const pv = new URLSearchParams(p);
+      pv.set('debug', '1');
+      $('prev').src = base + '?' + pv.toString();
+    }, 400);
+  }
+
+  document.addEventListener('input', build);
+  $('preset').addEventListener('change', () => { applyPreset(); build(); });
+  $('copy').onclick = async () => {
+    $('out').select();
+    try { await navigator.clipboard.writeText($('out').value); } catch (e) { document.execCommand('copy'); }
+    $('msg').textContent = 'URL copiada.';
+  };
+  $('reset').onclick = () => {
+    fields.forEach((el) => {
+      if (el.type === 'checkbox') el.checked = el.dataset.def === '1'; else el.value = el.dataset.def;
+    });
+    document.querySelectorAll('[data-game]').forEach((c) => { c.checked = false; });
+    $('preset').value = '';
+    applyPreset();
+    build();
+  };
+
+  // Carga valores desde la query de esta página (permite editar una URL existente).
+  const q = new URLSearchParams(location.search);
+  (q.get('game') || '').split(',').forEach((g) => {
+    const c = document.querySelector(`[data-game="${g.trim()}"]`);
+    if (c) c.checked = true;
+  });
+  const pq = (q.get('theme') || '').toLowerCase();
+  if (Util.PRESETS[pq]) { $('preset').value = pq; applyPreset(); }
+  fields.forEach((el) => {
+    if (!q.has(el.dataset.k)) return;
+    const v = q.get(el.dataset.k);
+    if (el.type === 'checkbox') el.checked = !['0', 'false', 'off', 'no'].includes(v.toLowerCase());
+    else if (el.type === 'color') el.value = /^[0-9a-f]{3,8}$/i.test(v) ? '#' + v : v;
+    else el.value = v;
+  });
+  build();
+</script>
+</body>
+</html>
