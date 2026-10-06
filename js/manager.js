@@ -21,6 +21,8 @@
 
   document.documentElement.style.setProperty('--bg', P.bg);
   document.documentElement.style.setProperty('--accent', P.accent);
+  document.documentElement.style.setProperty('--r', P.radius);
+  document.body.classList.toggle('rounded', P.radius > 0);
   document.body.classList.toggle('transparent', P.transparent);
   document.body.classList.toggle('debug', P.debug);
   $('status').classList.toggle('hidden', !P.status);

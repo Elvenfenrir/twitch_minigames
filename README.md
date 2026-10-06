@@ -1,4 +1,4 @@
-# Chat Mini Games
+﻿# Chat Mini Games
 
 Página 100% offline (sin dependencias) para que el chat de Twitch juegue mini juegos vía Streamer.bot.
 Ábrela directamente (`index.html`) o como Browser Source de OBS (`file:///.../index.html?top=5`).
@@ -29,7 +29,8 @@ Página 100% offline (sin dependencias) para que el chat de Twitch juegue mini j
 | `score` | `1` | Muestra score actual y total acumulado |
 | `top` | `0` | Muestra el top N de usuarios con más comandos válidos (0 = oculto) |
 | `persist` | `0` | Guarda score total y top en localStorage |
-| `theme` | – | Preset de colores: `arien` (rosa pastel), `vtuber` (blanco/negro/verde neón/dorado), `light`, `neon`, `retro` (vacío = oscuro) |
+| `theme` | – | Preset de colores: `arien` (rosa pastel), `fenrir` (blanco/negro/verde neón/dorado), `light`, `neon`, `retro` (vacío = oscuro) |
+| `radius` | `0` | Radio (px, sobre 720) de las esquinas curvas del fondo del juego. Fuera del cuadrado queda transparente (OBS) |
 | `bg` | `10151f` | Color de fondo (hex, con o sin `#`) |
 | `accent` | `ffd54a` | Color de acento: HUD, avisos y detalles de cada juego |
 

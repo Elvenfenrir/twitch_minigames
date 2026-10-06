@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const q = new URLSearchParams(location.search);
   const str = (k, d) => (q.has(k) ? q.get(k) : d);
   const num = (k, d) => {
@@ -37,6 +37,7 @@
     status: bool('status', true),
     debug: bool('debug', false),
     persist: bool('persist', false),
+    radius: Math.max(0, num('radius', 0)),
   };
 
   // Tema: [clave, color por defecto, etiqueta, grupo]. Cada clave se puede
@@ -74,7 +75,7 @@
       tileEmpty: '#4a2f55', c4board: '#c26aa5', c4empty: '#2a1830', c4p1: '#ffd1e6', c4p2: '#b5e3ff',
       ttX: '#ff9ccf', ttO: '#a8d8ff'
     },
-    vtuber: {
+    fenrir: {
       bg: '#14171c', accent: '#39ff14', grid: '#ffffff', board: '#0b0d10',
       pI: '#39ff14', pO: '#f5e6b8', pT: '#ffffff', pS: '#7dff5a', pZ: '#e0b341', pJ: '#c9ffb8', pL: '#f0d58a',
       snake: '#f4f4f4', food: '#39ff14',
