@@ -24,7 +24,9 @@
     endpoint: str('endpoint', '/'),
     ssl: bool('ssl', false),
     password: str('password', ''),
+    actionId: str('actionId', '').trim(),
     game: str('game', 'random'),
+    rotation: q.has('rotation') ? bool('rotation', true) : null,
     mode: str('mode', 'instant').toLowerCase() === 'vote' ? 'vote' : 'instant',
     voteMs: Math.max(200, num('voteMs', 1500)),
     score: bool('score', true),
@@ -171,4 +173,3 @@
   };
   window.Games = {};
 })();
-

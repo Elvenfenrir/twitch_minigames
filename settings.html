@@ -73,7 +73,9 @@
       <label>Endpoint <input type="text" data-k="endpoint" data-def="/" value="/"></label>
       <label>Contraseña <input type="password" data-k="password" data-def="" value=""></label>
       <label>SSL (wss) <input type="checkbox" data-k="ssl" data-def="0"></label>
+      <label>Action ID para juego vacío en modo single <input type="text" data-k="actionId" data-def="" value=""></label>
       <label>Debug (simular chat) <input type="checkbox" data-k="debug" data-def="0"></label>
+      <div class="note">El juego vacío en modo single ejecuta esta acción al terminar la partida y le pasa gameOverSec en el argumento "timer".</div>
     </fieldset>
   </div>
 
@@ -152,6 +154,7 @@
     t = setTimeout(() => {
       const pv = new URLSearchParams(p);
       pv.set('debug', '1');
+      pv.delete('actionId');
       $('prev').src = base + '?' + pv.toString();
     }, 400);
   }

@@ -77,3 +77,6 @@ body.transparent, body.rounded { background: transparent; }
 }
 body.debug #dbg { display: block; }
 
+
+body.idle { background: transparent; }
+body.idle #stage, body.idle #overlay, body.idle .hud { display: none; }

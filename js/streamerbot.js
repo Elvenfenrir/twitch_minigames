@@ -4,6 +4,8 @@
     constructor(opts) {
       this.opts = opts;
       this.ws = null;
+      this.actionRequestId = 0;
+      this.actionRequests = new Set();
     }
 
     connect() {
@@ -36,7 +38,24 @@
     }
 
     send(obj) {
-      if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify(obj));
+      if (!this.ws || this.ws.readyState !== 1) return false;
+      try {
+        this.ws.send(JSON.stringify(obj));
+        return true;
+      } catch (e) {
+        console.warn('Streamer.bot: no se pudo enviar la solicitud WebSocket', e);
+        return false;
+      }
+    }
+
+    doAction(actionId, args = {}) {
+      if (!actionId) return;
+      const id = `minigames-action-${++this.actionRequestId}`;
+      if (!this.send({ request: 'DoAction', id, action: { id: actionId }, args })) {
+        console.warn('Streamer.bot: no se pudo ejecutar la acción; WebSocket desconectado');
+        return;
+      }
+      this.actionRequests.add(id);
     }
 
     subscribe() {
@@ -65,10 +84,15 @@
         else console.warn('Streamer.bot: autenticación fallida', msg);
         return;
       }
+      if (this.actionRequests.has(msg.id)) {
+        this.actionRequests.delete(msg.id);
+        if (msg.status !== 'ok' && msg.status !== 200) console.warn('Streamer.bot: DoAction falló', msg);
+        return;
+      }
       const ev = msg.event;
       if (!ev) {
         // CPH.WebsocketBroadcastJson envia el JSON tal cual, sin envoltorio de evento.
-        if (!msg.request && !msg.status && (msg.game !== undefined || msg.action !== undefined)) this.opts.onCustom(msg);
+        if (!msg.request && !msg.status && (msg.game !== undefined || msg.games !== undefined || msg.action !== undefined)) this.opts.onCustom(msg);
         return;
       }
       const d = msg.data || {};
@@ -86,4 +110,3 @@
   }
   window.StreamerBot = StreamerBot;
 })();
-

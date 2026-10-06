@@ -2,7 +2,7 @@ Games.tictactoe = {
   name: 'Tic-Tac-Toe',
   hint: 'A1-C3 (letra = columna, número = fila) o 1-9 · el chat (X) vs IA (O)',
   create() {
-    const OX = 60, OY = 110, C = 200;
+    const OX = 105, OY = 95, C = 170;
     const b = Array(9).fill(0);
     const L = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
     let turn = 1, wait = 0, win = null;
@@ -98,11 +98,11 @@ Games.tictactoe = {
           const cx = OX + (i % 3) * C + C / 2, cy = OY + Math.floor(i / 3) * C + C / 2;
           if (b[i] === 1) {
             ctx.strokeStyle = Params.theme.ttX;
-            ctx.beginPath(); ctx.moveTo(cx - 50, cy - 50); ctx.lineTo(cx + 50, cy + 50);
-            ctx.moveTo(cx + 50, cy - 50); ctx.lineTo(cx - 50, cy + 50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 42, cy - 42); ctx.lineTo(cx + 42, cy + 42);
+            ctx.moveTo(cx + 42, cy - 42); ctx.lineTo(cx - 42, cy + 42); ctx.stroke();
           } else {
             ctx.strokeStyle = Params.theme.ttO;
-            ctx.beginPath(); ctx.arc(cx, cy, 52, 0, 7); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, 44, 0, 7); ctx.stroke();
           }
         }
         if (win) {
@@ -116,7 +116,7 @@ Games.tictactoe = {
         if (!g.over) {
           ctx.fillStyle = turn === 1 ? Params.theme.ttX : Params.theme.ttO;
           ctx.font = 'bold 28px Segoe UI, sans-serif';
-          ctx.fillText(turn === 1 ? 'Turno del chat (X)' : 'Pensando la IA (O)…', 360, 700);
+          ctx.fillText(turn === 1 ? 'Turno del chat (X)' : 'Pensando la IA (O)…', 360, 645);
         }
         ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.lineWidth = 1;
       }

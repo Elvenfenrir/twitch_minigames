@@ -17,7 +17,9 @@
     const l = P.game.split(',').map(norm).filter(Boolean);
     if (l.length) pool = l;
   }
-  const fixed = pool.length === 1;
+  const basePool = pool;
+  // fixed = modo "single game": al terminar se repite el mismo juego.
+  let fixed = P.rotation === null ? pool.length === 1 : !P.rotation;
 
   document.documentElement.style.setProperty('--bg', P.bg);
   document.documentElement.style.setProperty('--accent', P.accent);
@@ -36,7 +38,7 @@
   const save = () => { if (P.persist) localStorage.setItem(KEY, JSON.stringify(stats)); };
   let topDirty = true;
 
-  const S = { id: null, def: null, game: null, over: false, next: null, votes: null };
+  const S = { id: null, def: null, game: null, over: false, next: null, votes: null, idle: false, endActionPending: false };
   const pick = (excl) => {
     const c = pool.filter((i) => i !== excl);
     const a = c.length ? c : pool;
@@ -46,35 +48,103 @@
   function start(id) {
     S.id = id; S.def = G[id];
     S.game = S.def.create({ speed: P.speed });
-    S.over = false; S.next = null; S.votes = null;
+    S.over = false; S.next = null; S.votes = null; S.idle = false;
+    document.body.classList.remove('idle');
     $('hint').textContent = P.hint ? S.def.hint : '';
+  }
+
+  // Modo single sin juego activo: todo oculto hasta recibir un juego o volver a rotación.
+  function goIdle() {
+    S.idle = true; S.next = null; S.votes = null;
+    document.body.classList.add('idle');
   }
 
   function onOver() {
     S.over = true;
     stats.banked += S.game.score;
     save();
-    if (!S.next) S.next = { id: fixed ? S.id : pick(S.id), at: performance.now() + P.gameOverSec * 1000, announce: false };
+    const runEndAction = S.endActionPending;
+    S.endActionPending = false;
+    if (runEndAction && P.actionId) sb.doAction(P.actionId, { timer: P.gameOverSec });
+    if (!S.next) S.next = {
+      id: fixed ? null : pick(S.id),
+      at: performance.now() + P.gameOverSec * 1000,
+      announce: false,
+      hold: runEndAction
+    };
   }
 
   function schedule(id) {
-    const at = performance.now() + P.switchSec * 1000;
-    if (S.next) {
-      S.next.id = id; S.next.at = Math.min(S.next.at, at); S.next.announce = true;
-    } else S.next = { id, at, announce: true };
+    S.endActionPending = false;
+    S.next = { id, at: performance.now() + P.switchSec * 1000, announce: true, hold: false };
+  }
+
+  // {"action":"rotation","games":"snake,tetris"} / {"action":"single","game":"snake"}
+  function setPlayMode(act, p) {
+    if (act === 'rotation') {
+      fixed = false;
+      const requestedGames = p.games ?? p.game;
+      const l = String(requestedGames ?? '').split(',').map(norm).filter(Boolean);
+      pool = requestedGames !== undefined && !String(requestedGames).trim()
+        ? ids
+        : l.length ? l : basePool.length > 1 ? basePool : ids;
+      S.endActionPending = false;
+    } else {
+      fixed = true;
+      const game = String(p.game ?? '').trim();
+      if (!game) armEndAction();
+      else {
+        const id = game.toLowerCase() === 'random' ? pick(S.id) : norm(game);
+        if (id) schedule(id);
+      }
+    }
+    // Si ya terminó el juego, corrige el siguiente que estaba programado.
+    if (S.over && S.next && !S.next.announce) {
+      S.next.id = fixed ? null : pick(S.id);
+      S.next.hold = false;
+    }
+    if (S.idle && !fixed) schedule(pick(S.id));
+  }
+
+  function armEndAction() {
+    S.next = null;
+    S.endActionPending = false;
+    if (S.over) {
+      S.idle = false;
+      document.body.classList.remove('idle');
+      if (P.actionId) sb.doAction(P.actionId, { timer: P.gameOverSec });
+      return;
+    }
+    S.endActionPending = true;
+  }
+
+  function onEmptyGame() {
+    if (fixed) {
+      armEndAction();
+      return;
+    }
+    pool = ids;
+    S.endActionPending = false;
+    if (S.over) S.next = { id: pick(S.id), at: performance.now() + P.gameOverSec * 1000, announce: false, hold: false };
+    else if (S.idle) schedule(pick(S.id));
+    else S.next = null;
   }
 
   function onCustom(p) {
     if (typeof p === 'string') p = { game: p };
     if (!p || typeof p !== 'object') return;
-    let g = p.game ?? p.name ?? p.command ?? (p.action ? '' : 'random');
+    const act = String(p.action || '').toLowerCase();
+    if (act === 'rotation' || act === 'single') return setPlayMode(act, p);
+    let g = p.game ?? p.name ?? p.command;
     if (String(p.action || '').toLowerCase() === 'restart') g = S.id;
+    else if (g === undefined && !p.action) g = 'random';
+    if (g !== undefined && !String(g).trim()) return onEmptyGame();
     const id = String(g).toLowerCase() === 'random' ? pick(S.id) : norm(g);
     if (id) schedule(id);
   }
 
   function onChat(user, text) {
-    if (!S.game || S.over || text.length > 12) return;
+    if (!S.game || S.idle || S.over || text.length > 12) return;
     const cmd = text.trim().toUpperCase().replace(/\s+/g, ' ');
     if (!S.game.accepts(cmd)) return;
     stats.users[user] = (stats.users[user] || 0) + 1;
@@ -107,7 +177,8 @@
       if (e.key !== 'Enter') return;
       const v = e.target.value.trim();
       e.target.value = '';
-      if (v.startsWith('/')) onCustom({ game: v.slice(1) });
+      if (v === '/rotation' || v === '/single') onCustom({ action: v.slice(1) });
+      else if (v.startsWith('/')) onCustom({ game: v.slice(1) });
       else onChat('debug', v);
     });
   }
@@ -147,11 +218,11 @@
     const ov = $('overlay');
     ov.classList.toggle('show', S.over);
     if (S.over) {
-      const t = `${S.def.name}|${S.game.result}|${S.game.score}|${secs}|${S.next.id}`;
+      const t = `${S.def.name}|${S.game.result}|${S.game.score}|${secs}|${S.next && S.next.id}`;
       if (cache.ov !== t) {
         cache.ov = t;
         $('overlay-box').innerHTML =
-          `<h1>${S.game.result}</h1><p>Score: <b>${S.game.score}</b></p><p>Siguiente: ${G[S.next.id].name} en ${secs}s</p>`;
+          `<h1>${S.game.result}</h1><p>Score: <b>${S.game.score}</b></p>${S.next && S.next.id ? '<p>Siguiente: ' + G[S.next.id].name + ' en ' + secs + 's</p>' : ''}`;
       }
     }
     if (S.votes) {
@@ -160,17 +231,27 @@
     } else setText('votes', '');
   }
 
-  start(pick());
+  if (P.rotation === false) goIdle(); else start(pick());
   let last = performance.now();
   function frame(now) {
     const dt = Math.min(50, now - last);
     last = now;
+    if (S.idle) {
+      if (S.next && now >= S.next.at) start(S.next.id);
+      else ctx.clearRect(0, 0, 720, 720);
+      requestAnimationFrame(frame);
+      return;
+    }
     if (!S.over) {
       S.game.update(dt);
       if (S.game.over) onOver();
     }
     resolveVotes(now);
-    if (S.next && now >= S.next.at) start(S.next.id);
+    if (S.next && now >= S.next.at) {
+      if (S.next.id) start(S.next.id);
+      else if (S.next.hold) S.next = null;
+      else { goIdle(); requestAnimationFrame(frame); return; }
+    }
     ctx.clearRect(0, 0, 720, 720);
     S.game.draw(ctx);
     hud(now);
@@ -178,4 +259,3 @@
   }
   requestAnimationFrame(frame);
 })();
-
