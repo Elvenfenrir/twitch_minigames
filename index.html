@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Chat Mini Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="stage" width="720" height="720"></canvas>
+
+<div id="score" class="hud"></div>
+<div id="top" class="hud"></div>
+<div id="votes" class="hud"></div>
+<div id="banner" class="hud"></div>
+<div id="hint" class="hud"></div>
+<div id="overlay"><div id="overlay-box"></div></div>
+<div id="status" title="Streamer.bot"></div>
+<input id="dbg" type="text" placeholder="debug: A, A1, /snake ..." autocomplete="off">
+
+<script src="js/util.js"></script>
+<script src="js/streamerbot.js"></script>
+<script src="js/games/snake.js"></script>
+<script src="js/games/tetris.js"></script>
+<script src="js/games/minesweeper.js"></script>
+<script src="js/games/breakout.js"></script>
+<script src="js/games/g2048.js"></script>
+<script src="js/games/connect4.js"></script>
+<script src="js/manager.js"></script>
+</body>
+</html>
